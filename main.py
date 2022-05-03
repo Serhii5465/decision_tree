@@ -42,19 +42,40 @@ def train(X_train, y_train, criterion):
 def split_dataset(X, y):
     """
     Splitting arrays and matrices into random train and test subsets.
-    :param X: The 2D array of features variables.
-    :param y: The target variable.
+    :param X: The 2D array of features.
+    :param y: The array of targets variables.
     :return: List containing train-test split of inputs.
     """
     return train_test_split(X, y)
 
 def prediction(X_test, clf_object):
+    """
+    Predict class or regression value for X.
+    For a classification model, the predicted class for each sample in X is returned.
+    :param X_test: The testing subset.
+    :param clf_object: Instance of fitted DecisionTreeClassifier
+    :return: The predicted classes, or the predict values.
+    """
     return clf_object.predict(X_test)
 
 def cal_accuracy(y_test, y_pred):
+    """
+    Accuracy classification score.
+    In multilabel classification, this function computes subset accuracy:
+    the set of labels predicted for a sample must exactly match the corresponding set of labels in y_test.
+    :param y_test: Ground truth (correct) labels.
+    :param y_pred: Predicted labels, as returned by a classifier.
+    """
     print("Accuracy:", metrics.accuracy_score(y_test, y_pred))
 
 def show_plot(clf_object, feature_cols, file):
+    """
+    Exporting a decision tree,loading graph as defined by data in DOT format
+    and saving result into file.
+    :param clf_object: Instance of training DecisionTreeClassifier.
+    :param feature_cols: List of features names.
+    :param file: The name of the file where the plot will be saved.
+    """
     dot_data = export_graphviz(clf_object, feature_names = feature_cols)
     graph = pydotplus.graph_from_dot_data(dot_data)
     graph.write_png(file)
@@ -78,22 +99,20 @@ def main():
                     'Oldpeak',
                     'ST_Slope']
 
-    print(data[feature_cols])
+    X, y = data[feature_cols], data['HeartDisease']  # Features, target variable
+    X_train, X_test, y_train, y_test = split_dataset(X, y)
 
-    # X, y = data[feature_cols], data['HeartDisease']  # Features, target variable
-    # X_train, X_test, y_train, y_test = split_dataset(X, y)
-    #
-    # clf_gini = train(X_train, y_train, "gini")
-    # clf_entropy = train(X_train, y_train, "entropy")
-    #
-    # print("Results Using Gini Index:")
-    # y_pred_gini = prediction(X_test, clf_gini)
-    # cal_accuracy(y_test, y_pred_gini)
-    # show_plot(clf_gini, feature_cols, 'result_gini.png')
-    #
-    # print("Results Using Entropy:")
-    # y_pred_entropy = prediction(X_test, clf_entropy)
-    # cal_accuracy(y_test, y_pred_entropy)
-    # show_plot(clf_entropy, feature_cols, 'result_entropy.png')
+    clf_gini = train(X_train, y_train, "gini")
+    clf_entropy = train(X_train, y_train, "entropy")
+
+    print("Results Using Gini Index:")
+    y_pred_gini = prediction(X_test, clf_gini)
+    cal_accuracy(y_test, y_pred_gini)
+    show_plot(clf_gini, feature_cols, 'result_gini.png')
+
+    print("Results Using Entropy:")
+    y_pred_entropy = prediction(X_test, clf_entropy)
+    cal_accuracy(y_test, y_pred_entropy)
+    show_plot(clf_entropy, feature_cols, 'result_entropy.png')
 
 main()
