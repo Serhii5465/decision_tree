@@ -31,7 +31,6 @@ def train(X_train, y_train):
     building a decision tree classifier from the training set (X, y)
     :param X_train: The training input samples.
     :param y_train: The target values (class labels) as integers or strings.
-    Supported criteria are “gini” for the Gini impurity and “entropy” for the information gain.
     :return: Fitted estimator.
     """
     clf = DecisionTreeClassifier()
@@ -75,7 +74,12 @@ def show_plot(clf_object, feature_cols, file):
     :param feature_cols: List of features names.
     :param file: The name of the file where the plot will be saved.
     """
-    dot_data = export_graphviz(clf_object, feature_names = feature_cols)
+    dot_data = export_graphviz(clf_object,
+                               feature_names = feature_cols,
+                               special_characters=True,
+                               rounded=True,
+                               filled=True)
+
     graph = pydotplus.graph_from_dot_data(dot_data)
     graph.write_png(file)
 
@@ -102,7 +106,7 @@ def main():
 
     clf = train(X_train, y_train)
 
-    print("Results Using Gini Index:")
+    print("Result:")
     y_pred = prediction(X_test, clf)
     cal_accuracy(y_test, y_pred)
     show_plot(clf, feature_cols, 'result.png')
